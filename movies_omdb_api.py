@@ -21,9 +21,3 @@ def get_movie_from_api(title):
     except Exception as e:
         print(f"Error with the API: {e}")
         return None
-
-
-test_movie = get_movie_from_api("TITLE HERE")
-print(test_movie["Title"])
-print(test_movie["Year"])
-print(test_movie["imdbRating"])

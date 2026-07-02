@@ -1,4 +1,5 @@
 import movie_storage_sql as storage
+import movies_omdb_api as omdb
 import statistics
 import random
 
@@ -61,16 +62,22 @@ def check_movies_exist(movies_dict):
 def add_new_movie():
     """Add a new movie to the database asking user for name, year and rating."""
     title = title_input("Introduce the name of the new movie: ")
-    rating_movie = number_input(
-        "Introduce the rating of the new movie: ",
-        "Error! Please introduce a decimal number for the rating [0-10].",
-        is_float=True
-    )
-    year_movie = number_input(
-        "Introduce the year of the new movie: ",
-        "Error! Please introduce a valid number for the year."
-    )
-    storage.add_movie(title, year_movie, rating_movie)
+    movie_data = omdb.get_movie_from_api(title)
+    if movie_data:
+        print(f"Found: {movie_data['Title']} ({movie_data['Year']})")
+        year_movie = int(movie_data['Year'])
+        rating_movie = float(movie_data['imdbRating'])
+        storage.add_movie(title, year_movie, rating_movie)
+    else:
+        print("Movie not found in API. Please enter details manually.")
+        rating_movie = number_input(
+            "Introduce the rating of the new movie: ",
+            "Error! Please introduce a decimal number for the rating [0-10].",
+            is_float=True)
+        year_movie = number_input(
+            "Introduce the year of the new movie: ",
+            "Error! Please introduce a valid number for the year.")
+        storage.add_movie(title, year_movie, rating_movie)
 
 
 def delete_movies():
