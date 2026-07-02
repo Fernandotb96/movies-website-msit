@@ -1,4 +1,4 @@
-import movie_storage_sql as storage
+import movies_storage_sql as storage
 import movies_omdb_api as omdb
 import statistics
 import random

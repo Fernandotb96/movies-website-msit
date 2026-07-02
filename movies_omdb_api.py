@@ -10,6 +10,7 @@ API_URL = "https://www.omdbapi.com/"
 
 
 def get_movie_from_api(title):
+    """Fetches movie from OMDb API by title"""
     params = {"apikey": API_KEY, "t": title}
     try:
         response = requests.get(API_URL, params=params)

@@ -7,7 +7,7 @@ engine = create_engine(DB_URL)
 
 
 def init_database():
-    """Initializes the database and creates the tables if they don't exist."""
+    """Initializes the database and creates the table if it doesn't exist."""
     with engine.connect() as initial_connection:
         initial_connection.execute(text("""
             CREATE TABLE IF NOT EXISTS movies (
@@ -21,7 +21,7 @@ def init_database():
 
 
 def list_movies():
-    """Retrieve all movies from the database."""
+    """Retrieve all movies from the database in a dictionary."""
     with engine.connect() as connection:
         result = connection.execute(text("SELECT title, year, rating, poster FROM movies"))
         movies = result.fetchall()
