@@ -1,5 +1,6 @@
 import movies_storage_sql as storage
 import movies_omdb_api as omdb
+import movies_web_generator as webgen
 import statistics
 import random
 
@@ -9,11 +10,11 @@ def menu():
     print("""
     ======= Fernando's Movies Database =======
     Menu:
-     1. List of movies      2. Add movie
-     3. Delete movie        4. Update rating
-     5. Stats               6. Random movie
-     7. Search movie        8. Movies sorted by rating
-     9. Movies sorted by year 
+     1. List of movies          2. Add movie
+     3. Delete movie            4. Update rating
+     5. Stats                   6. Random movie
+     7. Search movie            8. Movies sorted by rating
+     9. Movies sorted by year   10. Generate a website
      0. Exit program
     ===========================================""")
 
@@ -173,6 +174,12 @@ def movies_by_year():
         print(f"'{movie}' [{info["year"]}]: {info["rating"]}")
 
 
+def create_website():
+    """Generate an HTML file called 'index.html' with the movies"""
+    movies = storage.list_movies()
+    webgen.create_website(movies)
+
+
 def main():
     """
     Orchestrate the main application flow.
@@ -190,11 +197,12 @@ def main():
         "6": random_movie,
         "7": movie_searcher,
         "8": movies_by_rating,
-        "9": movies_by_year
+        "9": movies_by_year,
+        "10": create_website
     }
     while True:
         menu()
-        user_decision = input(f"\nEnter a choice [0-9]: ").strip()
+        user_decision = input(f"\nEnter a choice [0-10]: ").strip()
         if user_decision == "0":
             print(f"Thanks for the visit, have a nice day!")
             break
