@@ -1,6 +1,6 @@
 import statistics
 import random
-import movie_storage
+import movie_storage_sql as storage
 
 
 def menu():
@@ -18,14 +18,15 @@ def menu():
 
 
 def list_of_movies():
-    """Prints the amount of movies and info of each one"""
-    movies = movie_storage.get_movies()
+    """Fetch the movies from database and print them in a list"""
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     print(f"There are {len(movies)} movies in total:")
     print("-" * 30)
     for movie, info in movies.items():
-        print(f"'{movie}' from {info["Year"]} with a rating of {info["Rating"]}")
+        print(f"'{movie}' from {info["year"]} with a rating of {info["rating"]}")
+    print("-" * 30)
 
 
 def number_input(prompt, error_prompt, is_float=False):
@@ -35,7 +36,7 @@ def number_input(prompt, error_prompt, is_float=False):
             user_input = input(prompt)
             if is_float:
                 return float(user_input)
-            return int(user_input)  # Aquí cambie el return quitando el else
+            return int(user_input)
         except ValueError:
             print(error_prompt)
 
@@ -58,59 +59,59 @@ def check_movies_exist(movies_dict):
 
 
 def add_new_movie():
-    """Adds a new movie to the dict asking user for name, year and rating."""
+    """Add a new movie to the database asking user for name, year and rating."""
     title = title_input("Introduce the name of the new movie: ")
-    rating_new_movie = number_input(
+    rating_movie = number_input(
         "Introduce the rating of the new movie: ",
         "Error! Please introduce a decimal number for the rating [0-10].",
         is_float=True
     )
-    year_new_movie = number_input(
+    year_movie = number_input(
         "Introduce the year of the new movie: ",
         "Error! Please introduce a valid number for the year."
     )
-    movie_storage.add_movie(title, year_new_movie, rating_new_movie)
+    storage.add_movie(title, year_movie, rating_movie)
 
 
 def delete_movies():
-    """Ask user for name of movie to delete from the dict"""
+    """Ask user for a movie to delete from the database"""
     title = title_input("Introduce the name of the movie to delete: ")
-    movie_storage.delete_movie(title)
+    storage.delete_movie(title)
 
 
 def update_rating():
-    """Asks for movie name and rating to update"""
+    """Ask for movie name and rating to update in the database"""
     title = title_input("Introduce the name of the movie to update: ")
     new_rating = number_input(
         "Introduce the new rating for the movie: ",
         "Error! Please introduce a decimal number for the rating [0-10].",
         is_float=True
     )
-    movie_storage.update_movie(title, new_rating)
+    storage.update_movie(title, new_rating)
 
 
 def movies_stats():
     """Prints statistics about the movies database (avg, median, max and min)."""
-    movies = movie_storage.get_movies()
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     print("Movies stats: ")
     print("-" * 30)
-    ratings = [info["Rating"] for info in movies.values()]
+    ratings = [info["rating"] for info in movies.values()]
     average_rating = statistics.mean(ratings)
     median_rating = statistics.median(ratings)
     print(f"-The average rating is {average_rating:.2f}")
     print(f"-The median rating is {median_rating:.2f}")
     # Best movie/es:
     max_rating = max(ratings)
-    best_movies = [movie for movie, info in movies.items() if info["Rating"] == max_rating]
+    best_movies = [movie for movie, info in movies.items() if info["rating"] == max_rating]
     if len(best_movies) == 1:
         print(f"The best movie is '{best_movies[0]}' with a rating of {max_rating}")
     else:
         print(f"The best movies are: {best_movies} with a rating of {max_rating}")
     # Worst movie/es:
     min_rating = min(ratings)
-    worst_movies = [movie for movie, info in movies.items() if info["Rating"] == min_rating]
+    worst_movies = [movie for movie, info in movies.items() if info["rating"] == min_rating]
     if len(worst_movies) == 1:
         print(f"The worst movie is '{worst_movies[0]}' with a rating of {min_rating}")
     else:
@@ -119,19 +120,19 @@ def movies_stats():
 
 def random_movie():
     """Prints user a random movie with info"""
-    movies = movie_storage.get_movies()
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     movie_name_list = list(movies.keys())
     random_choice = random.choice(movie_name_list)
-    rating = movies[random_choice]["Rating"]
-    year = movies[random_choice]["Year"]
+    rating = movies[random_choice]["rating"]
+    year = movies[random_choice]["year"]
     print(f"We recommend you the movie '{random_choice}' from {year} with rating of {rating}")
 
 
 def movie_searcher():
-    """Ask for title and searches for a movie in the dict"""
-    movies = movie_storage.get_movies()
+    """Ask for title and searches for a movie in the database"""
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     movie_search = input("Introduce the name of the movie you want to search: ").strip().lower()
@@ -141,35 +142,35 @@ def movie_searcher():
     for movie, info in movies.items():
         if movie_search in movie.lower():
             found_something = True
-            print(f"{movie}: From {info["Year"]} with a rating of {info["Rating"]}.")
+            print(f"{movie}: From {info["year"]} with a rating of {info["rating"]}.")
     if not found_something:
         print(f"Error! Movie not found.")
 
 
 def movies_by_rating():
     """Prints movies sorted by rating in descending order"""
-    movies = movie_storage.get_movies()
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     print(f"Movies sorted by rating:")
     print("-" * 30)
-    movies_sorted = sorted(movies.items(), key=lambda x: x[1]["Rating"], reverse=True)
+    movies_sorted = sorted(movies.items(), key=lambda x: x[1]["rating"], reverse=True)
     for movie, info in movies_sorted:
-        print(f"'{movie}' [{info["Year"]}]: {info["Rating"]}")
+        print(f"'{movie}' [{info["year"]}]: {info["rating"]}")
 
 
 def movies_by_year():
     """Prints movies sorted by year in defined order(Normal or Reverse)"""
-    movies = movie_storage.get_movies()
+    movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     decision = input("Do you want to sort by year incrementally? (y/n): ").strip().lower()
     descending = decision not in ("y", "yes")
     print(f"Movies sorted by year:")
     print("-" * 30)
-    movies_sorted_year = sorted(movies.items(), key=lambda x: x[1]["Year"], reverse=descending)
+    movies_sorted_year = sorted(movies.items(), key=lambda x: x[1]["year"], reverse=descending)
     for movie, info in movies_sorted_year:
-        print(f"'{movie}' [{info["Year"]}]: {info["Rating"]}")
+        print(f"'{movie}' [{info["year"]}]: {info["rating"]}")
 
 
 def main():
@@ -188,7 +189,7 @@ def main():
         menu()
         user_decision = input(f"\nEnter a choice [0-9]: ").strip()
         if user_decision == "0":
-            print(f"Bye!")
+            print(f"Thanks for the visit, have a nice day!")
             break
         elif user_decision in router:
             command = router[user_decision]
