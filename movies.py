@@ -67,17 +67,10 @@ def add_new_movie():
         print(f"Found: {movie_data['Title']} ({movie_data['Year']})")
         year_movie = int(movie_data['Year'])
         rating_movie = float(movie_data['imdbRating'])
-        storage.add_movie(title, year_movie, rating_movie)
+        poster_url = movie_data['Poster']
+        storage.add_movie(title, year_movie, rating_movie, poster_url)
     else:
-        print("Movie not found in API. Please enter details manually.")
-        rating_movie = number_input(
-            "Introduce the rating of the new movie: ",
-            "Error! Please introduce a decimal number for the rating [0-10].",
-            is_float=True)
-        year_movie = number_input(
-            "Introduce the year of the new movie: ",
-            "Error! Please introduce a valid number for the year.")
-        storage.add_movie(title, year_movie, rating_movie)
+        print("Movie not found in API. Please try again.")
 
 
 def delete_movies():
