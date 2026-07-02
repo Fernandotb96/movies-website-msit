@@ -1,10 +1,10 @@
+import movie_storage_sql as storage
 import statistics
 import random
-import movie_storage_sql as storage
 
 
 def menu():
-    """Prints menu to user"""
+    """Print menu to user"""
     print("""
     ======= Fernando's Movies Database =======
     Menu:
@@ -42,7 +42,7 @@ def number_input(prompt, error_prompt, is_float=False):
 
 
 def title_input(prompt):
-    """Asks the user for a movie name, ensuring it is not empty or just spaces."""
+    """Ask user for a movie name, ensuring it is not empty or just spaces."""
     while True:
         title = input(prompt).strip().title()
         if title:
@@ -51,7 +51,7 @@ def title_input(prompt):
 
 
 def check_movies_exist(movies_dict):
-    """Checks if the database has movies. Prints an error if empty."""
+    """Check if the database has movies. Prints an error if empty."""
     if not movies_dict:
         print("Error! The database is currently empty.")
         return False
@@ -91,7 +91,7 @@ def update_rating():
 
 
 def movies_stats():
-    """Prints statistics about the movies database (avg, median, max and min)."""
+    """Print statistics about the movies database (avg, median, max and min)."""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -119,7 +119,7 @@ def movies_stats():
 
 
 def random_movie():
-    """Prints user a random movie with info"""
+    """Print random movie with info"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -131,7 +131,7 @@ def random_movie():
 
 
 def movie_searcher():
-    """Ask for title and searches for a movie in the database"""
+    """Ask for title and search for a movie in the database"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -148,7 +148,7 @@ def movie_searcher():
 
 
 def movies_by_rating():
-    """Prints movies sorted by rating in descending order"""
+    """Print movies sorted by rating in descending order"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -160,7 +160,7 @@ def movies_by_rating():
 
 
 def movies_by_year():
-    """Prints movies sorted by year in defined order(Normal or Reverse)"""
+    """Print movies sorted by year in defined order(Normal or Reverse)"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -174,6 +174,13 @@ def movies_by_year():
 
 
 def main():
+    """
+    Orchestrate the main application flow.
+
+    Initialize the database, then enter the main loop to display the
+    menu and execute user-selected operations based on the router dictionary.
+    """
+    storage.init_database()
     router = {
         "1": list_of_movies,
         "2": add_new_movie,
