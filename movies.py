@@ -1,6 +1,5 @@
-import movies_storage_sql as storage
-import movies_omdb_api as omdb
-import movies_web_generator as webgen
+from database import storage as storage
+from services import omdb_api as omdb, web_generator as webgen
 import statistics
 import random
 

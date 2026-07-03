@@ -1,5 +1,5 @@
+.env
 .idea/
 __pycache__/
-.env
-movies.db
+database/movies.db
 index.html

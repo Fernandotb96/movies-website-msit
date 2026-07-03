@@ -1,4 +1,4 @@
-TEMPLATE_PATH = "templates/index_template.html"
+TEMPLATE_PATH = "../templates/index_template.html"
 
 
 def serialize_movie(title, info):
@@ -34,7 +34,7 @@ def replace_template_text(html_list):
 def create_html(html_text):
     """Create the HTML file with name 'index.html' in root directory."""
     try:
-        with open("index.html", "w", encoding="utf-8") as file:
+        with open("../index.html", "w", encoding="utf-8") as file:
             file.write(html_text)
             print("Website created successfully")
     except OSError as e:
