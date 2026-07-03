@@ -24,7 +24,7 @@ def movies_to_html_list(movies):
 def replace_template_text(html_text):
     """Replace the template text with new movies HTML list"""
     try:
-        with open(TEMPLATE_PATH, "r") as file:
+        with open(TEMPLATE_PATH, "r", encoding="utf-8") as file:
             old_text = file.read()
             new_text = old_text.replace("__TEMPLATE_MOVIE_GRID__", html_text)
             return new_text
@@ -35,7 +35,7 @@ def replace_template_text(html_text):
 def create_html(html_text):
     """Create an HTML file with an HTML text"""
     try:
-        with open("index.html", "w") as file:
+        with open("index.html", "w", encoding="utf-8") as file:
             file.write(html_text)
             print("Website created successfully")
     except Exception as e:

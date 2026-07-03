@@ -19,6 +19,6 @@ def get_movie_from_api(title):
         if data["Response"] == "True":
             return data
         return None
-    except Exception as e:
+    except requests.RequestException as e:
         print(f"Error with the API: {e}")
         return None

@@ -5,8 +5,8 @@ import statistics
 import random
 
 
-def menu():
-    """Print menu to user"""
+def print_menu():
+    """Display the main menu options."""
     print("""
     ======= Fernando's Movies Database =======
     Menu:
@@ -20,7 +20,7 @@ def menu():
 
 
 def list_of_movies():
-    """Fetch the movies from database and print them in a list"""
+    """Display all movies in the database."""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -32,7 +32,7 @@ def list_of_movies():
 
 
 def number_input(prompt, error_prompt, is_float=False):
-    """Ask user for a number with the given prompts and condition"""
+    """Prompt user for a number with the given prompts and condition"""
     while True:
         try:
             user_input = input(prompt)
@@ -44,16 +44,16 @@ def number_input(prompt, error_prompt, is_float=False):
 
 
 def title_input(prompt):
-    """Ask user for a movie name, ensuring it is not empty or just spaces."""
+    """Prompt the user until a valid movie title is entered."""
     while True:
-        title = input(prompt).strip().title()
+        title = input(prompt).strip()
         if title:
             return title
         print("Error! The movie name cannot be empty. Please try again.\n")
 
 
 def check_movies_exist(movies_dict):
-    """Check if the database has movies. Prints an error if empty."""
+    """Check if there are movies in the database."""
     if not movies_dict:
         print("Error! The database is currently empty.")
         return False
@@ -61,38 +61,45 @@ def check_movies_exist(movies_dict):
 
 
 def add_new_movie():
-    """Add a new movie to the database asking user for name, year and rating."""
+    """Prompt the user to enter the title and add the new movie to the database."""
     title = title_input("Introduce the name of the new movie: ")
     movie_data = omdb.get_movie_from_api(title)
     if movie_data:
         print(f"Found: {movie_data['Title']} ({movie_data['Year']})")
         year_movie = int(movie_data['Year'])
-        rating_movie = float(movie_data['imdbRating'])
         poster_url = movie_data['Poster']
+        try:
+            rating_movie = float(movie_data["imdbRating"])
+        except ValueError:
+            rating_movie = 0
         storage.add_movie(title, year_movie, rating_movie, poster_url)
     else:
         print("Movie not found in API. Please try again.")
 
 
 def delete_movies():
-    """Ask user for a movie to delete from the database"""
+    """Prompt the user to enter the title and deletes the movie from the database."""
     title = title_input("Introduce the name of the movie to delete: ")
     storage.delete_movie(title)
 
 
 def update_rating():
-    """Ask for movie name and rating to update in the database"""
+    """Prompt the user to update the rating of an existing movie."""
     title = title_input("Introduce the name of the movie to update: ")
-    new_rating = number_input(
-        "Introduce the new rating for the movie: ",
-        "Error! Please introduce a decimal number for the rating [0-10].",
-        is_float=True
-    )
-    storage.update_movie(title, new_rating)
+    while True:
+        rating = number_input(
+            "Introduce the new rating for the movie: ",
+            "Error! Please introduce a decimal number for the rating [0-10].",
+            is_float=True
+        )
+        if 0 <= rating <= 10:
+            break
+        print("Rating must be between 0 and 10.")
+    storage.update_movie(title, rating)
 
 
 def movies_stats():
-    """Print statistics about the movies database (avg, median, max and min)."""
+    """Print statistics about the movie database collection (avg, median, max and min)."""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -120,7 +127,7 @@ def movies_stats():
 
 
 def random_movie():
-    """Print random movie with info"""
+    """Print a randomly selected movie from the database."""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
@@ -131,51 +138,51 @@ def random_movie():
     print(f"We recommend you the movie '{random_choice}' from {year} with rating of {rating}")
 
 
-def movie_searcher():
-    """Ask for title and search for a movie in the database"""
+def search_movie():
+    """Prompt the user to enter part of the title and search for a movie in the database"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     movie_search = input("Introduce the name of the movie you want to search: ").strip().lower()
     found_something = False
-    print(f"-Search Results:")
+    print("-Search Results:")
     print("-" * 30)
     for movie, info in movies.items():
         if movie_search in movie.lower():
             found_something = True
             print(f"{movie}: From {info["year"]} with a rating of {info["rating"]}.")
     if not found_something:
-        print(f"Error! Movie not found.")
+        print("Error! Movie not found.")
 
 
-def movies_by_rating():
+def sort_movies_by_rating():
     """Print movies sorted by rating in descending order"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
-    print(f"Movies sorted by rating:")
+    print("Movies sorted by rating:")
     print("-" * 30)
     movies_sorted = sorted(movies.items(), key=lambda x: x[1]["rating"], reverse=True)
     for movie, info in movies_sorted:
         print(f"'{movie}' [{info["year"]}]: {info["rating"]}")
 
 
-def movies_by_year():
-    """Print movies sorted by year in defined order(Normal or Reverse)"""
+def sort_movies_by_year():
+    """Print movies sorted by release year in defined order (asc or desc)"""
     movies = storage.list_movies()
     if not check_movies_exist(movies):
         return
     decision = input("Do you want to sort by year incrementally? (y/n): ").strip().lower()
-    descending = decision not in ("y", "yes")
-    print(f"Movies sorted by year:")
+    ascending = decision in ("y", "yes")
+    print("Movies sorted by year:")
     print("-" * 30)
-    movies_sorted_year = sorted(movies.items(), key=lambda x: x[1]["year"], reverse=descending)
+    movies_sorted_year = sorted(movies.items(), key=lambda x: x[1]["year"], reverse=not ascending)
     for movie, info in movies_sorted_year:
         print(f"'{movie}' [{info["year"]}]: {info["rating"]}")
 
 
 def create_website():
-    """Generate an HTML file called 'index.html' with the movies"""
+    """Generate the movie website."""
     movies = storage.list_movies()
     webgen.create_website(movies)
 
@@ -195,16 +202,16 @@ def main():
         "4": update_rating,
         "5": movies_stats,
         "6": random_movie,
-        "7": movie_searcher,
-        "8": movies_by_rating,
-        "9": movies_by_year,
+        "7": search_movie,
+        "8": sort_movies_by_rating,
+        "9": sort_movies_by_year,
         "10": create_website
     }
     while True:
-        menu()
+        print_menu()
         user_decision = input(f"\nEnter a choice [0-10]: ").strip()
         if user_decision == "0":
-            print(f"Thanks for the visit, have a nice day!")
+            print("Thanks for the visit, have a nice day!")
             break
         elif user_decision in router:
             command = router[user_decision]
