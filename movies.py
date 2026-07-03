@@ -1,5 +1,6 @@
-from database import storage as storage
-from services import omdb_api as omdb, web_generator as webgen
+import database.storage as storage
+import services.omdb_api as omdb
+import services.web_generator as webgen
 import statistics
 import random
 
