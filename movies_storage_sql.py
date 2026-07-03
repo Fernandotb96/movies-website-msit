@@ -1,15 +1,14 @@
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 
-# Define the database URL
 DB_URL = "sqlite:///movies.db"
-# Create the engine
 engine = create_engine(DB_URL)
 
 
 def init_database():
-    """Initializes the database and creates the table if it doesn't exist."""
-    with engine.connect() as initial_connection:
-        initial_connection.execute(text("""
+    """Initialize the database."""
+    with engine.connect() as connection:
+        connection.execute(text("""
             CREATE TABLE IF NOT EXISTS movies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT UNIQUE NOT NULL,
@@ -17,11 +16,11 @@ def init_database():
                 rating REAL NOT NULL,
                 poster TEXT)
         """))
-        initial_connection.commit()
+        connection.commit()
 
 
 def list_movies():
-    """Retrieve all movies from the database in a dictionary."""
+    """Return all movies from the database, each one in a dictionary format."""
     with engine.connect() as connection:
         result = connection.execute(text("SELECT title, year, rating, poster FROM movies"))
         movies = result.fetchall()
@@ -37,7 +36,7 @@ def add_movie(title, year, rating, poster='Unknown'):
                                {"title": title, "year": year, "rating": rating, "poster": poster})
             connection.commit()
             print(f"Movie '{title}' added successfully.")
-        except Exception as e:
+        except SQLAlchemyError as e:
             print(f"Error: {e}")
 
 
@@ -52,7 +51,7 @@ def delete_movie(title):
                 print(f"Error! '{title}' was not found.")
             else:
                 print(f"Movie '{title}' deleted successfully.")
-        except Exception as e:
+        except SQLAlchemyError as e:
             print(f"Error: {e}")
 
 
@@ -68,5 +67,5 @@ def update_movie(title, rating):
                 print(f"Error! '{title}' was not found.")
             else:
                 print(f"Movie '{title}' updated successfully with a rating of {rating}.")
-        except Exception as e:
+        except SQLAlchemyError as e:
             print(f"Error: {e}")

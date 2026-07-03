@@ -32,7 +32,7 @@ def list_of_movies():
 
 
 def number_input(prompt, error_prompt, is_float=False):
-    """Prompt user for a number with the given prompts and condition"""
+    """Prompt user for a number with the given prompts and condition."""
     while True:
         try:
             user_input = input(prompt)
@@ -63,7 +63,7 @@ def check_movies_exist(movies_dict):
 def add_new_movie():
     """Prompt the user to enter the title and add the new movie to the database."""
     title = title_input("Introduce the name of the new movie: ")
-    movie_data = omdb.get_movie_from_api(title)
+    movie_data = omdb.fetch_movie_data(title)
     if movie_data:
         print(f"Found: {movie_data['Title']} ({movie_data['Year']})")
         year_movie = int(movie_data['Year'])
